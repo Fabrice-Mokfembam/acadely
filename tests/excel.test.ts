@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import ExcelJS from 'exceljs';
+import {readMarks,readStudents} from '../lib/excel.ts';
+const student={id:'s1',class_id:'c',code:'ST1',name:'John',dob:''};
+async function workbook(rows:unknown[][]){const w=new ExcelJS.Workbook(),s=w.addWorksheet('Marks');for(const row of rows)s.addRow(row);return new File([await w.xlsx.writeBuffer() as ArrayBuffer],'marks.xlsx');}
+test('Excel marks reject formulas, duplicates, unknown IDs and out-of-range values',async()=>{const f=await workbook([['Student ID','Student name','Mark /20','Status'],['ST1','John',21,'mark'],['ST1','John',15,'mark'],['Unknown','A',14,'mark']]);const r=await readMarks(f,[student],'sub',1,[]);assert.equal(r.errors.length,3);assert.equal(r.marks.length,0);const formula=await workbook([['Student ID','Student name','Mark /20','Status'],['ST1','John',{formula:'10+5',result:15},'mark']]);assert.equal((await readMarks(formula,[student],'sub',1,[])).errors.length,1);});
+test('Excel accepts zero and preserves absence without inventing a numeric mark',async()=>{const f=await workbook([['Student ID','Student name','Mark /20','Status'],['ST1','John',0,'mark']]);const r=await readMarks(f,[student],'sub',1,[]);assert.equal(r.marks[0].value,0);assert.equal(r.errors.length,0);const a=await workbook([['Student ID','Student name','Mark /20','Status'],['ST1','John','','absent']]);assert.equal((await readMarks(a,[student],'sub',1,[])).marks[0].value,null);});
+test('Student import checks duplicate IDs and real calendar dates',async()=>{const f=await workbook([['Student ID','Student name','Date of birth (YYYY-MM-DD)'],['ST2','Mary','2013-02-30'],['ST1','John','2013-03-14'],['ST3','Alice','2013-03-14']]);const r=await readStudents(f,'c',[student]);assert.equal(r.errors.length,2);assert.equal(r.items.length,1);assert.equal(r.items[0].name,'Alice');});
