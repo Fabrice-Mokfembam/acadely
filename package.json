@@ -11,7 +11,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types --test tests/*.test.ts"
+    "test": "node --experimental-strip-types --test tests/*.test.ts",
+    "grant:platform-owner": "node --env-file=.env.local scripts/grant-platform-owner.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.117.2",

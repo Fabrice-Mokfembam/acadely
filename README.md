@@ -90,7 +90,13 @@ Tests cover calculations, missing/absent/exempt marks, competition ranking, spre
 
 The application builds without credentials. Actual Supabase Auth email delivery, live project provisioning, Storage integration and cross-device browser/offline behaviour still need testing against your configured project. No live Supabase credentials were available during development. Browser visual QA was unavailable in the build environment.
 
-This is a runnable first version, not a claim of production validation with real school data. Current additional limits: no central super-administrator billing/school suspension dashboard; no automatic student promotion/rollover; no deadline editor; no subject groups; no deletion of school workspaces; partially translated platform controls (report templates are English/French); no revocation of PDFs already downloaded. Some advanced administration settings described during planning are therefore follow-up work.
+This is a runnable first version, not a claim of production validation with real school data. A protected platform-owner dashboard is available at `/platform-admin` for registration and structural oversight; billing and school suspension controls are not yet included. Current additional limits: no automatic student promotion/rollover; no deadline editor; no subject groups; no deletion of school workspaces; partially translated platform controls (report templates are English/French); no revocation of PDFs already downloaded. Some advanced administration settings described during planning are therefore follow-up work.
+
+After applying migrations, grant access to an existing Supabase user without exposing the service key to the browser:
+
+```bash
+npm run grant:platform-owner -- owner@example.com
+```
 
 ## Files
 
